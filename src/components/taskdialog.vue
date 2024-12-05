@@ -1,3 +1,109 @@
+<script setup lang="ts">
+import { Sunrise, MagicStick, AlarmClock } from "@element-plus/icons-vue";
+import { ref, unref, computed, watch, defineProps, defineEmits } from "vue";
+import { ITask } from "../store/todoList/index";
+
+const props = defineProps<{
+  title: string;
+  dialogVisiable: boolean;
+  task: ITask | null;
+  cancelBtn?: string;
+  ensureBtn: string;
+}>();
+const $emit = defineEmits<{
+  (e: "ok", newMessage: ITask | null): void;
+  (e: "cancel"): void;
+}>();
+
+const usePopver = () => {
+  const timePopoverRef = ref<any>(null);
+  const showTimePopover = () => {
+    console.log(timePopoverRef);
+    // timePopoverRef.value!.delayHide?.()
+  };
+  const priorityPopoverRef = ref<any>(null);
+  const showPriorityPopover = () => {
+    console.log(priorityPopoverRef);
+    // priorityPopoverRef.value!.delayHide?.()
+  };
+  const alarmPopoverRef = ref<any>(null);
+  const showAlarmPopover = () => {
+    console.log(alarmPopoverRef);
+    // alarmPopoverRef.value!.delayHide?.()
+  };
+  return {
+    timePopoverRef,
+    showTimePopover,
+    priorityPopoverRef,
+    showPriorityPopover,
+    alarmPopoverRef,
+    showAlarmPopover,
+  };
+};
+
+const useDialog = () => {
+  const editTask = ref<ITask | null>(null);
+
+  watch(
+    () => props.task,
+    (newVal, oldVal) => {
+      if (newVal) {
+        editTask.value = {
+          ...newVal,
+        };
+      }
+    },
+    { deep: true, immediate: true }
+  );
+
+  const dialogVisiable = computed(() => {
+    return props.dialogVisiable;
+  });
+
+  const onTaskNameInput = (event: Event) => {
+    const text = (event.target as HTMLInputElement).innerText;
+    editTask.value!.name = text;
+  };
+
+  const onTaskDescribInput = (event: Event) => {
+    const text = (event.target as HTMLInputElement).innerText;
+    editTask.value!.describe = text;
+  };
+
+  const ok = () => {
+    $emit("ok", editTask.value);
+  };
+  const cancel = () => {
+    $emit("cancel");
+  };
+  return {
+    editTask,
+    dialogVisiable,
+    onTaskNameInput,
+    onTaskDescribInput,
+    ok,
+    cancel,
+  };
+};
+
+const {
+  timePopoverRef,
+  showTimePopover,
+  priorityPopoverRef,
+  showPriorityPopover,
+  alarmPopoverRef,
+  showAlarmPopover,
+} = usePopver();
+const {
+  dialogVisiable,
+  editTask,
+  onTaskNameInput,
+  onTaskDescribInput,
+  ok,
+  cancel,
+} = useDialog();
+</script>
+
 <template>
   <el-dialog
     v-model="dialogVisiable"
@@ -29,10 +135,19 @@
           :show-arrow="false"
           :show-after="100"
         >
-          <el-button
+          <el-button v-popover="timePopoverRef" @click="showTimePopover"
             ><el-icon :size="16" color="red"> <Sunrise /> </el-icon>今天</el-button
           >
         </el-tooltip>
+        <el-popover
+          ref="timePopoverRef"
+          trigger="click"
+          title="With title"
+          virtual-triggering
+          persistent
+        >
+          <span> Some content </span>
+        </el-popover>
         <el-tooltip
           content="添加优先级：P(1-5)"
           :offset="4"
@@ -41,10 +156,19 @@
           :show-arrow="false"
           :show-after="100"
         >
-          <el-button
+          <el-button v-popover="priorityPopoverRef" @click="showPriorityPopover"
             ><el-icon :size="16" color="red"> <MagicStick /> </el-icon>优先级</el-button
           >
         </el-tooltip>
+        <el-popover
+          ref="priorityPopoverRef"
+          trigger="click"
+          title="With title"
+          virtual-triggering
+          persistent
+        >
+          <span> Some content </span>
+        </el-popover>
         <el-tooltip
           content="添加提醒(弹窗/公众号)"
           :offset="4"
@@ -53,10 +177,19 @@
           :show-arrow="false"
           :show-after="100"
         >
-          <el-button
+          <el-button v-popover="alarmPopoverRef" @click="showAlarmPopover"
             ><el-icon :size="16" color="red"> <AlarmClock /> </el-icon>提醒</el-button
           >
         </el-tooltip>
+        <el-popover
+          ref="alarmPopoverRef"
+          trigger="click"
+          title="With title"
+          virtual-triggering
+          persistent
+        >
+          <span> Some content </span>
+        </el-popover>
       </div>
     </div>
     <el-divider border-style="dashed" />
@@ -70,79 +203,6 @@
     </div>
   </el-dialog>
 </template>
-
-<script setup lang="ts">
-import {
-  Sunrise,
-  Plus,
-  TrendCharts,
-  MagicStick,
-  View,
-  AlarmClock,
-  Bicycle,
-  Tickets,
-} from "@element-plus/icons-vue";
-import { ref, computed, watch, defineProps, defineEmits } from "vue";
-import { ITask } from "../store/todoList/index";
-
-const props = defineProps<{
-  title: string;
-  dialogVisiable: boolean;
-  task: ITask;
-  cancelBtn: string;
-  ensureBtn: string;
-}>();
-const emit = defineEmits<{
-  (e: "ok", newMessage: string): void;
-  (e: "cancel", newMessage: string): void;
-}>();
-
-const useDialog = () => {
-  const editTask = ref<ITask|null>(null);
-
-  watch(
-    () => props.task,
-    (newVal, oldVal) => {
-      if (newVal) {
-        editTask.value = {
-          ...newVal
-        }
-      }
-    },
-    { deep: true, immediate: true }
-  );
-
-  const dialogVisiable = computed(() => {
-    return props.dialogVisiable;
-  });
-
-  const onTaskNameInput = (event) => {
-    const text = event.target.innerText;
-    editTask.value.name = text;
-  };
-
-  const onTaskDescribInput = (event) => {
-    const text = event.target.innerText;
-    editTask.value.describe = text;
-  };
-
-  const ok = () => {
-    emit("ok", editTask);
-  };
-  const cancel = () => {
-    emit("cancel");
-  };
-  return {
-    editTask,
-    dialogVisiable,
-    onTaskNameInput,
-    onTaskDescribInput,
-    ok,
-    cancel,
-  };
-};
-const { dialogVisiable, editTask, onTaskNameInput, onTaskDescribInput, ok, cancel } = useDialog();
-</script>
 
 <style lang="less" scoped>
 .task_dialog {

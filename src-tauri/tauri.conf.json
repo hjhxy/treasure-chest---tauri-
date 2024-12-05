@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "Todo-List",
-        "width": 800,
-        "height": 620
+        "title": "🔧工具箱",
+        "width": 850,
+        "height": 670,
+        "resizable": false,
+        "fullscreen": false
       }
     ],
     "security": {

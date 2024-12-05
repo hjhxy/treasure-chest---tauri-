@@ -1,6 +1,6 @@
 import * as Vuex from 'vuex';
 
-type priority = 1 | 2 | 3 | 4 | 5;
+type priority = 1 | 2 | 3 | 4 | 5; // 优先级
 
 export interface ITask {
     id: string;

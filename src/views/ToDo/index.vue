@@ -1,58 +1,20 @@
-<template>
-  <div class="root">
-    <div class="header">
-      <div class="buttons">
-        <el-button color="#db4336" plain @click="openAddTask">
-          <el-icon><Plus /></el-icon>
-          <span>添加任务</span>
-        </el-button>
-        <el-button color="#db4336" plain>
-          <el-icon><TrendCharts /></el-icon>
-          排序
-        </el-button>
-        <el-button color="#db4336" plain>
-          <el-icon><View /></el-icon>
-          <span>预览</span>
-        </el-button>
-      </div>
-      <TaskDialog
-        title="Add Task"
-        ensureBtn="确认添加"
-        :dialogVisiable="addTask_dialogTableVisible"
-        :task="task"
-        @ok="addTask"
-        @cancel="cancelAddTask"
-      />
-    </div>
-    <el-divider content-position="left" border-style="dashed">
-      <el-icon :size="16" color="green"><Tickets /></el-icon> Task List
-    </el-divider>
-
-    <div class="body">
-      <RouterView />
-    </div>
-
-    <div class="footer">
-      <el-divider content-position="left" border-style="dashed">
-        <el-icon :size="20" color="green"><Bicycle /></el-icon> Completion progress
-      </el-divider>
-      <div class="progress">
-        <ProgressBar :current="currentProgress" :all="allProgress"/>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { Plus, TrendCharts, View, Bicycle, Tickets } from "@element-plus/icons-vue";
-import TaskDialog from "../../components/taskdialog";
-import ProgressBar from "../../components/progressbar";
+import TaskDialog from "../../components/taskdialog.vue";
+import ProgressBar from "../../components/progressbar.vue";
 import { ref } from "vue";
 import { useStore } from "vuex";
 import { ITask, ITaskList } from "../../store/todoList/index";
 import { v4 as uuidv4 } from "uuid";
 
 const store = useStore();
+
+const useSideBar = ()=>{
+  const controlSideBar = ()=>{
+
+  }
+}
+
 const useAddTask = () => {
   const addTask_dialogTableVisible = ref(false);
   const task = ref<ITask | null>(null);
@@ -86,11 +48,13 @@ const useAddTask = () => {
 };
 
 const useProgressBar = () => {
-  const currentProgress = store.getters["todoList/completedTasks"].length;
-  const allProgress = store.state.todoList.tasks.length;
+  const currentProgress: number = store.getters["todoList/completedTasks"].length;
+  const allProgress:number = store.state.todoList.tasks.length || 1;
+  const overProportion = Number((currentProgress/allProgress).toFixed(2)) * 100;
   return {
     currentProgress,
     allProgress,
+    overProportion,
   };
 };
 
@@ -101,8 +65,53 @@ const {
   addTask,
   task,
 } = useAddTask();
-const { currentProgress, allProgress } = useProgressBar();
+const { currentProgress, allProgress, overProportion } = useProgressBar();
 </script>
+
+<template>
+  <div class="root">
+    <div class="header">
+      <div class="buttons">
+        <el-button color="#db4336" plain @click="openAddTask">
+          <el-icon><Plus /></el-icon>
+          <span>添加任务</span>
+        </el-button>
+        <el-button color="#db4336" plain>
+          <el-icon><TrendCharts /></el-icon>
+          排序
+        </el-button>
+        <el-button color="#db4336" plain>
+          <el-icon><View /></el-icon>
+          <span>预览</span>
+        </el-button>
+      </div>
+    </div>
+
+    <div class="body">
+      <el-divider content-position="left" border-style="dashed">
+        <el-icon :size="16" color="green"><Tickets /></el-icon> Task List
+      </el-divider>
+      <RouterView />
+    </div>
+
+    <div class="footer">
+      <el-divider content-position="left" border-style="dashed">
+        <el-icon :size="20" color="green"><Bicycle /></el-icon> Completion progress（{{ overProportion }}%）
+      </el-divider>
+      <div class="progress">
+        <ProgressBar :current="currentProgress" :all="allProgress" />
+      </div>
+    </div>
+  </div>
+  <TaskDialog
+    title="Add Task"
+    ensureBtn="确认添加"
+    :dialogVisiable="addTask_dialogTableVisible"
+    :task="task"
+    @ok="addTask"
+    @cancel="cancelAddTask"
+  />
+</template>
 
 <style>
 .el-popper.is-customized {
@@ -119,14 +128,24 @@ const { currentProgress, allProgress } = useProgressBar();
 
 <style lang="less" scoped>
 .root {
+  display: flex;
+  flex-direction: column;
+  // justify-content: flex-start;
+  // justify-content: space-between;
+  width: 100%;
+  height: 100%;
+
   .header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     margin: 20px 30px 0;
 
     .buttons {
-      // justify-items: flex-end;
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
     }
   }
 
@@ -134,14 +153,14 @@ const { currentProgress, allProgress } = useProgressBar();
   }
 
   .footer {
+    // background-color: red;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     flex-direction: column;
-    // background-color: antiquewhite;
     .progress {
-      width: 500px;
-      height: 30px;
+      width: 100%;
+      height: fit-content;
     }
   }
 }
