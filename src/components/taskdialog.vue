@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Sunrise, MagicStick, AlarmClock } from "@element-plus/icons-vue";
-import { ref, unref, computed, watch, defineProps, defineEmits } from "vue";
-import { ITask } from "../store/todoList/index";
+import { ref, computed, watch, defineProps, defineEmits } from "vue";
+import { ITask, priority } from "../store/todoList/index";
+import Time from "./time.vue";
+import Priority from "./priority.vue";
+import Alarm from "./alarm.vue";
 
 const props = defineProps<{
   title: string;
@@ -15,27 +18,46 @@ const $emit = defineEmits<{
   (e: "cancel"): void;
 }>();
 
-const usePopver = () => {
+const useTimePopover = () => {
   const timePopoverRef = ref<any>(null);
   const showTimePopover = () => {
     console.log(timePopoverRef);
-    // timePopoverRef.value!.delayHide?.()
+    timePopoverRef.value!.delayHide?.();
   };
+  return {
+    timePopoverRef,
+    showTimePopover,
+  };
+}
+
+const usePriorityPopover = () => {
   const priorityPopoverRef = ref<any>(null);
   const showPriorityPopover = () => {
     console.log(priorityPopoverRef);
-    // priorityPopoverRef.value!.delayHide?.()
+    visiblePriority.value = true;
   };
+  const priorityIndex = ref<priority>(1);
+  const visiblePriority = ref<boolean>(false);
+  const choosePriority = (data: priority) => {
+    priorityIndex.value = data;
+    visiblePriority.value = false;
+  };
+  return {
+    priorityPopoverRef,
+    priorityIndex,
+    visiblePriority,
+    choosePriority,
+    showPriorityPopover,
+  };
+};
+
+const useAlarmPopver = () => {
   const alarmPopoverRef = ref<any>(null);
   const showAlarmPopover = () => {
     console.log(alarmPopoverRef);
     // alarmPopoverRef.value!.delayHide?.()
   };
   return {
-    timePopoverRef,
-    showTimePopover,
-    priorityPopoverRef,
-    showPriorityPopover,
     alarmPopoverRef,
     showAlarmPopover,
   };
@@ -87,13 +109,20 @@ const useDialog = () => {
 };
 
 const {
-  timePopoverRef,
-  showTimePopover,
   priorityPopoverRef,
   showPriorityPopover,
+  priorityIndex,
+  visiblePriority,
+  choosePriority,
+} = usePriorityPopover();
+const {
+  timePopoverRef,
+  showTimePopover,
+} = useTimePopover();
+const {
   alarmPopoverRef,
   showAlarmPopover,
-} = usePopver();
+} = useAlarmPopver();
 const {
   dialogVisiable,
   editTask,
@@ -142,11 +171,11 @@ const {
         <el-popover
           ref="timePopoverRef"
           trigger="click"
-          title="With title"
+          placement="bottom-start"
           virtual-triggering
           persistent
         >
-          <span> Some content </span>
+          <Time />
         </el-popover>
         <el-tooltip
           content="添加优先级：P(1-5)"
@@ -163,11 +192,13 @@ const {
         <el-popover
           ref="priorityPopoverRef"
           trigger="click"
-          title="With title"
+          placement="bottom-start"
           virtual-triggering
           persistent
+          :width="50"
+          :visible="visiblePriority"
         >
-          <span> Some content </span>
+          <Priority :chooseIndex="priorityIndex" @choosePriority="choosePriority" />
         </el-popover>
         <el-tooltip
           content="添加提醒(弹窗/公众号)"
@@ -184,11 +215,11 @@ const {
         <el-popover
           ref="alarmPopoverRef"
           trigger="click"
-          title="With title"
+          placement="bottom-start"
           virtual-triggering
           persistent
         >
-          <span> Some content </span>
+          <Alarm />
         </el-popover>
       </div>
     </div>
