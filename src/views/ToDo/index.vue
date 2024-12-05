@@ -2,7 +2,7 @@
 import { Plus, TrendCharts, View, Bicycle, Tickets } from "@element-plus/icons-vue";
 import TaskDialog from "../../components/taskdialog.vue";
 import ProgressBar from "../../components/progressbar.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { ITask, ITaskList } from "../../store/todoList/index";
 import { v4 as uuidv4 } from "uuid";
@@ -33,9 +33,9 @@ const useAddTask = () => {
     addTask_dialogTableVisible.value = false;
     console.log(addTask_dialogTableVisible.value);
   };
-  const addTask = (data) => {
+  const addTask = (data: ITask) => {
     addTask_dialogTableVisible.value = false;
-    store.commit("todoList/addTask", data.value);
+    store.commit("todoList/addTask", data);
     console.log(store.state.todoList);
   };
   return {
@@ -47,10 +47,27 @@ const useAddTask = () => {
   };
 };
 
+const useSortTask = () => {
+  const sortTask = ()=>{
+    store.commit("todoList/sortTask", 'priority');
+    console.log(store.state.todoList);
+  };
+  return {
+    sortTask,
+  };
+};
+
 const useProgressBar = () => {
-  const currentProgress: number = store.getters["todoList/completedTasks"].length;
-  const allProgress:number = store.state.todoList.tasks.length || 1;
-  const overProportion = Number((currentProgress/allProgress).toFixed(2)) * 100;
+  const currentProgress = computed(()=>{
+    console.log(11, store.getters["todoList/completedTasks"].length);
+    return store.getters["todoList/completedTasks"].length
+  });
+  const allProgress = computed(()=>{
+    return store.state.todoList.tasks.length || 1
+  });
+  const overProportion = computed(()=>{
+    return Number((currentProgress.value/allProgress.value).toFixed(2)) * 100
+  });
   return {
     currentProgress,
     allProgress,
@@ -65,6 +82,8 @@ const {
   addTask,
   task,
 } = useAddTask();
+
+const { sortTask } = useSortTask();
 const { currentProgress, allProgress, overProportion } = useProgressBar();
 </script>
 
@@ -76,7 +95,7 @@ const { currentProgress, allProgress, overProportion } = useProgressBar();
           <el-icon><Plus /></el-icon>
           <span>添加任务</span>
         </el-button>
-        <el-button color="#db4336" plain>
+        <el-button color="#db4336" plain @click="sortTask">
           <el-icon><TrendCharts /></el-icon>
           排序
         </el-button>

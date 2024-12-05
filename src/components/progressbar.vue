@@ -1,25 +1,22 @@
 <script setup lang="ts">
-import { defineProps, ref, onMounted} from "vue";
+import { defineProps, ref, onMounted, computed} from "vue";
 
 const props = defineProps<{
   current: number;
   all: number;
 }>();
 
-const count = ref(20);
-const handleClick = () => {
-  count.value = count.value + 10;
-};
-
 const useBear = ()=>{
-  const left = ref(22.5);
+  const left = computed(()=>{
+    return (props.current / props.all) * 635;
+  });
   return {
     left,
   };
 }
 onMounted(()=>{
   setTimeout(() => {
-    left.value = props.current/props.all * (637.5-45) + 45/2;
+    
   }, 1000);
 });
 const { left } = useBear();

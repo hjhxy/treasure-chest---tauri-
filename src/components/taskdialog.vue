@@ -14,7 +14,7 @@ const props = defineProps<{
   ensureBtn: string;
 }>();
 const $emit = defineEmits<{
-  (e: "ok", newMessage: ITask | null): void;
+  (e: "ok", newMessage: ITask): void;
   (e: "cancel"): void;
 }>();
 
@@ -79,6 +79,9 @@ const useDialog = () => {
   );
 
   const dialogVisiable = computed(() => {
+    if (!props.dialogVisiable) {
+      visiblePriority.value = false;
+    }
     return props.dialogVisiable;
   });
 
@@ -93,7 +96,7 @@ const useDialog = () => {
   };
 
   const ok = () => {
-    $emit("ok", editTask.value);
+    $emit("ok", editTask.value as ITask);
   };
   const cancel = () => {
     $emit("cancel");

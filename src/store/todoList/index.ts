@@ -37,7 +37,10 @@ const taskListModule: Vuex.Module<ITaskState, any> = {
       },
       setTasks(state, tasks: ITaskList) {
         state.tasks = tasks;
-      }
+      },
+      sortTask(state, property: keyof ITask = 'priority') {
+        state.tasks.sort((a, b) => (a[property] as any) - (b[property] as any));
+      },
     },
     actions: {
       addTask({ commit }, task: ITaskList) {

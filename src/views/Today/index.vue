@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { ITask, ITaskList } from "../../store/todoList/index";
 import TaskDialog from "../../components/taskdialog.vue";
@@ -8,9 +8,12 @@ import { getRandomSoftColor } from '../../../utils/color';
 const store = useStore();
 
 const useHeader = () => {
-  const completedTasks = store.getters["todoList/completedTasks"];
-  const pendingTasks = store.getters["todoList/pendingTasks"];
-
+  const completedTasks = computed(()=>{
+    return store.getters["todoList/completedTasks"];
+  });
+  const pendingTasks = computed(()=>{
+    return store.getters["todoList/pendingTasks"];
+  });
   return {
     completedTasks,
     pendingTasks,
@@ -97,6 +100,9 @@ const {
             <p class="taskname">{{ item.name }}</p>
             <span class="taskdesc">{{ item.describe }}</span>
           </div>
+          <div class="rightflag">
+            <img :src="`/src/assets/dialog/qizi_${item.priority}.png`" alt="">
+          </div>
         </div>
       </div>
       <TaskDialog
@@ -123,6 +129,18 @@ is-left {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@keyframes flag {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .root {
@@ -162,6 +180,7 @@ is-left {
           align-items: center;
           justify-content: center;
         }
+         
         .center {
           flex: 1;
 
@@ -176,6 +195,23 @@ is-left {
 
           &:hover {
             cursor: pointer;
+          }
+        }
+
+        .rightflag {
+          margin-left: 10px;
+          padding: 0 10px;
+          display: flex;
+          align-items: center;
+
+          img {
+            width: 20px;
+            height: 20px;
+            animation-name: flag;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-delay: 0;
+            animation-timing-function: ease-in-out;
           }
         }
       }
