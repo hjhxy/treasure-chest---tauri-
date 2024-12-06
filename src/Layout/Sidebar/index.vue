@@ -16,7 +16,7 @@ const useList = () => {
       nowicon: "/src/assets/todo_choose.png",
     },
     {
-      id: "",
+      id: "ClassSchedule",
       url: "/classSchedule",
       name: "课程表",
       class: ["list-item"],
@@ -32,7 +32,9 @@ const useList = () => {
       nowicon: "/src/assets/chatgpt.png",
     },
   ]);
+  const currentItemId = ref<string>(list.value[0].id);
   const chooseList = (id: string) => {
+    currentItemId.value = id;
     list.value.forEach((item) => {
       if (item.id === id) {
         item.class = ["list-item", "active"];
@@ -45,6 +47,7 @@ const useList = () => {
   };
   return {
     list,
+    currentItemId,
     chooseList,
   };
 };
@@ -57,13 +60,14 @@ const useControlSideBar = () => {
     const hideSideBar = () => {
         $emit('hideSideBar');
     };
+
     return {
         showSideBar,
         hideSideBar,
     };
 }
 
-const { list, chooseList } = useList();
+const { list, currentItemId, chooseList } = useList();
 const { showSideBar, hideSideBar } = useControlSideBar();
 </script>
 
@@ -83,14 +87,36 @@ const { showSideBar, hideSideBar } = useControlSideBar();
         :class="item.class"
         @click="chooseList(item.id)"
       >
-        <img class="icon" :src="item.nowicon" alt="" />
-        <span>{{ item.name }}</span>
+        <img :class="['icon', currentItemId == item.id?'active-icon':'']" :src="item.nowicon" alt="" />
+        <span>{{ item.name }} </span>
       </RouterLink>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
+@keyframes active-icon {
+  0% {
+    transform: scale(1.1);
+    opacity: 1.1;
+  }
+  20% {
+    transform: scale(0.9);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1.1;
+  }
+}
+.active-icon {
+  animation-name: active-icon;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-delay: 0ms;
+  animation-iteration-count: infinite;
+}
+
 .root {
   width: 100%;
   height: 100%;
