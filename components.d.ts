@@ -16,6 +16,8 @@ declare module 'vue' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElLink: typeof import('element-plus/es')['ElLink']
     ElPopover: typeof import('element-plus/es')['ElPopover']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Priority: typeof import('./src/components/priority.vue')['default']
     Progressbar: typeof import('./src/components/progressbar.vue')['default']

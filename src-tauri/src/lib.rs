@@ -6,11 +6,6 @@ use reqwest::{blocking::Client, header};
 use serde_json::{json, Value};
 use serde::{Serialize, Deserialize};
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -20,14 +15,14 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-#[derive(Serialize, Deserialize)]
-struct Params {
-    url: Option<String>,
-    cookie: Option<String>,
+#[tauri::command]
+fn greet(name: &str, age: i32) -> String {
+    println!("{}, {}", name, age);
+    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
-fn search_grade_api(params: Params) -> Result<Value, String> {
+fn search_grade_api(url: &str, cookie: &str) -> Value {
     let client = Client::new();
 
     // 创建表单数据
@@ -42,8 +37,8 @@ fn search_grade_api(params: Params) -> Result<Value, String> {
     form_data.insert("pageNumber", "1".to_string());
 
     // 发送同步请求
-    let response = client.post(params.url.unwrap_or("https://ehall.szu.edu.cn/gsapp/sys/szdxwdcjapp/modules/wdcj/xscjcx.do".to_string()))
-        .header(header::COOKIE, params.cookie.unwrap_or("".to_string()))
+    let response = client.post(url)
+        .header(header::COOKIE, cookie)
         .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded")
         .form(&form_data)
         .send(); // 使用同步 send()
@@ -53,17 +48,24 @@ fn search_grade_api(params: Params) -> Result<Value, String> {
         Ok(r) => {
             let text = match r.text() {
                 Ok(t) => t,
-                Err(_) => return Err("获取数据失败".to_string()),
+                Err(_) => return json!(ErrorResponse::new(400, "获取数据失败".to_string())),
             };
 
             // 解析 JSON
             match serde_json::from_str::<ResponseData>(&text) {
-                Ok(data) => Ok(json!(data)),
-                Err(_) => Err("查询失败！JSON解析失败！".to_string()),
+                Ok(data) => json!(data),
+                Err(_) => json!(ErrorResponse::new(400, "查询失败！JSON解析失败！".to_string())),
             }
         },
-        Err(_) => Err("请求失败！".to_string()), // 请求失败的处理
+        Err(_) => json!(ErrorResponse::new(400, "请求失败！".to_string())), // 请求失败的处理
     }
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Params {
+    url: String,
+    cookie: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -71,6 +73,19 @@ struct ResponseData {
     datas: Datas,
     code: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ErrorResponse {
+    code: usize,
+    msg: String,
+}
+
+impl ErrorResponse {
+    fn new(code: usize, msg: String) -> Self {
+        ErrorResponse { code, msg }
+    }
+}
+
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Datas {

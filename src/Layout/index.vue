@@ -66,18 +66,18 @@ const { sideBarRef, showSideBar, hideSideBar } = useSideBar();
 </template>
 
 <style scoped lang="less">
-// @media screen and (max-width: 600) {
-//   .sidebar {
-//     width: 0px !important;
-//   }
-// }
-// @media screen and (min-width: 600) {
-//   .sidebar {
-//     width: 200px !important;
-//   }
-// }
+@media screen and (max-width: 600) {
+  .sidebar {
+    width: 0px !important;
+  }
+}
+@media screen and (min-width: 600) {
+  .sidebar {
+    width: 200px !important;
+  }
+}
 .hide {
-  transform: translateX(-100%);
+  // transform: translateX(-100%);
   display: none !important;
 }
 .show {
@@ -101,7 +101,7 @@ const { sideBarRef, showSideBar, hideSideBar } = useSideBar();
 }
 
 .main {
-  transition: all .5s;
+  transition: all 2.5s;
   flex: 75%;
   min-width: 400px;
   display: flex;

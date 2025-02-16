@@ -1,5 +1,7 @@
 <template>
-    <RouterView/>
+    <keep-alive include="*">
+        <RouterView/>
+    </keep-alive>
 </template>
 
 <script lang="ts" setup></script>
