@@ -1,37 +1,40 @@
 import { createRouter, createMemoryHistory } from "vue-router";
 import Layout from '../Layout/index.vue';
 import ToDo from '../views/ToDo/index.vue';
+import LLM from "../views/LLM/index.vue";
 
-const routers = [{
+const routers = [
+  {
     path: "/",
     component: Layout,
-    redirect: '/todo',
+    redirect: "/todo",
     children: [
-        {
-            path: "todo",
-            component: ToDo,
-            redirect:'/todo/today',
-            children: [
-                {
-                    path: "today",
-                    component: ()=>import('../views/Today/index.vue')
-                },
-                {
-                    path: "preview",
-                    component: ()=>import('../views/Preview/index.vue')
-                },
-            ]
-        },
-        {
-            path: "classSchedule",
-            component: ()=>import('../views/ClassSchdule/index.vue')
-        },
-        {
-            path: 'chatgpt',
-            component: ()=>import('../views/ChatGPT/index.vue')
-        }
-    ]
-}];
+      {
+        path: "todo",
+        component: ToDo,
+        redirect: "/todo/today",
+        children: [
+          {
+            path: "today",
+            component: () => import("../views/Today/index.vue"),
+          },
+          {
+            path: "preview",
+            component: () => import("../views/Preview/index.vue"),
+          },
+        ],
+      },
+      {
+        path: "searchgrade",
+        component: () => import("../views/SearchGrade/index.vue"),
+      },
+      {
+        path: "llm",
+        component: LLM,
+      },
+    ],
+  },
+];
 
 
 

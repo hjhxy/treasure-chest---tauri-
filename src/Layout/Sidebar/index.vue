@@ -2,7 +2,6 @@
 import { ref, defineEmits } from 'vue';
 
 const $emit = defineEmits<{
-    (e:'showSideBar'):void;
     (e:'hideSideBar'):void;
 }>();
 const useList = () => {
@@ -12,24 +11,24 @@ const useList = () => {
       url: "/todo",
       name: "TodoList",
       class: ["list-item", "active"],
-      icons: ["/src/assets/todo.png", "/src/assets/todo_choose.png"],
-      nowicon: "/src/assets/todo_choose.png",
+      icons: ["/src/assets/icons/todo.png", "/src/assets/icons/todo_choose.png"],
+      nowicon: "/src/assets/icons/todo_choose.png",
     },
     {
-      id: "ClassSchedule",
-      url: "/classSchedule",
-      name: "课程表",
+      id: "searchgrade",
+      url: "/searchgrade",
+      name: "成绩查询",
       class: ["list-item"],
-      icons: ["/src/assets/chatgpt.png", "/src/assets/chatgpt_choose.png"],
-      nowicon: "/src/assets/chatgpt.png",
+      icons: ["/src/assets/icons/searchgrade.png", "/src/assets/icons/searchgrade_choose.png"],
+      nowicon: "/src/assets/icons/searchgrade.png",
     },
     {
-      id: "ChatGpt",
-      url: "/chatgpt",
-      name: "ChatGPT",
+      id: "llm",
+      url: "/llm",
+      name: "LLM",
       class: ["list-item"],
-      icons: ["/src/assets/chatgpt.png", "/src/assets/chatgpt_choose.png"],
-      nowicon: "/src/assets/chatgpt.png",
+      icons: ["/src/assets/icons/chatgpt.png", "/src/assets/icons/chatgpt_choose.png"],
+      nowicon: "/src/assets/icons/chatgpt.png",
     },
   ]);
   const currentItemId = ref<string>(list.value[0].id);
@@ -53,22 +52,17 @@ const useList = () => {
 };
 
 const useControlSideBar = () => {
-    const showSideBar = () => {
-        $emit('showSideBar');
-    };
-
     const hideSideBar = () => {
         $emit('hideSideBar');
     };
 
     return {
-        showSideBar,
         hideSideBar,
     };
 }
 
 const { list, currentItemId, chooseList } = useList();
-const { showSideBar, hideSideBar } = useControlSideBar();
+const { hideSideBar } = useControlSideBar();
 </script>
 
 <template>
@@ -76,7 +70,7 @@ const { showSideBar, hideSideBar } = useControlSideBar();
     <div class="head">
       <p class="weather">18-20度，多云转晴☁️</p>
       <div class="controlside">
-        <img @click="hideSideBar" src="../../assets/hidesidebarhoriz.png" alt="" />
+        <img @click="hideSideBar" src="../../assets/icons/hidesidebarhoriz.png" alt="" />
       </div>
     </div>
     <div class="lists">
@@ -97,16 +91,20 @@ const { showSideBar, hideSideBar } = useControlSideBar();
 <style lang="less" scoped>
 @keyframes active-icon {
   0% {
-    transform: scale(1.1);
-    opacity: 1.1;
+    transform: scale(1);
+    opacity: 1;
   }
-  20% {
-    transform: scale(0.9);
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  65% {
+    transform: scale(0.8);
     opacity: 0.4;
   }
   100% {
-    transform: scale(1.1);
-    opacity: 1.1;
+    transform: scale(1);
+    opacity: 1;
   }
 }
 .active-icon {
