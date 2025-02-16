@@ -96,6 +96,7 @@ const {
             style="width: 340px"
             :autosize="{ minRows: 2, maxRows: 4 }"
             type="textarea"
+            resize="none"
             placeholder="输入cookie，教程可登录github:xxx查看"
           />
         </div>
@@ -117,7 +118,7 @@ const {
         <h4>2. 成绩查询如何操作？</h4>
         <p></p>
         <p>
-          该工具的源码已经公开到Github，具体可以查阅提供的
+          该工具的源码已经开源到Github，具体可以查阅提供的
           <span
             >Github链接（https://github.com/hjhxy/treasure-chest---tauri），当然如果有天你发现用不到这个工具的其它功能，也可以单独使用命令行工具，双击即可运行更简单且功能相同，这是下载地址（https://github.com/hjhxy/rust_sz_searde_grade/tags），记得选最新版本安装。</span
           >
