@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
-
-const greetMsg = ref("");
-const name = ref("");
 
 </script>
 
 <template>
   <main class="container">
-   <RouterView/>
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </main>
 </template>
-
 
 <style>
 /* 全局样式 */

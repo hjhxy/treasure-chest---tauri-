@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { ITask, ITaskList } from "../../store/todoList/index";
 import TaskDialog from "../../components/taskdialog.vue";
@@ -22,7 +22,7 @@ const useHeader = () => {
 
 const useList = () => {
   const taskList: ITaskList = store.state.todoList.tasks;
-  const changeComplete = (e:Event, id: string) => {
+  const changeComplete = (_:Event, id: string) => {
     store.commit("todoList/toggleTask", id);
   };
   const getListClass = ()=>{
@@ -86,7 +86,7 @@ const {
     </div>
     <div class="task-list">
       <!-- 任务列表 -->
-      <div class="list" :style="getListClass()" v-for="(item, index) in taskList">
+      <div class="list" :style="getListClass()" v-for="(item, index) in taskList" :key="index">
         <!-- <el-divider /> -->
         <div class="content">
           <div class="left">

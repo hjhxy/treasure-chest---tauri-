@@ -14,7 +14,7 @@
     "noEmit": true,
     "jsx": "preserve",
     "typeRoots": ["./node_modules", "./src/*.d.ts", "./src/**/*.d.ts"],
-    "types": ["node", "vue"],  // 确保包含 vuex
+    "types": [],  // 确保包含 vuex
     "allowSyntheticDefaultImports": true,  // 启用此标志
 
 

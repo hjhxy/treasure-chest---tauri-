@@ -4,16 +4,10 @@ import TaskDialog from "../../components/taskdialog.vue";
 import ProgressBar from "../../components/progressbar.vue";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { ITask, ITaskList } from "../../store/todoList/index";
+import { ITask } from "../../store/todoList/index";
 import { v4 as uuidv4 } from "uuid";
 
 const store = useStore();
-
-const useSideBar = ()=>{
-  const controlSideBar = ()=>{
-
-  }
-}
 
 const useAddTask = () => {
   const addTask_dialogTableVisible = ref(false);

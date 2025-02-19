@@ -19,7 +19,7 @@ const choose = (item: priority) => {
 
 <template>
   <div class="root">
-    <div class="list" v-for="(item, index) in list" @click="choose(item)">
+    <div class="list" v-for="(item, index) in list" @click="choose(item)" :key="index">
         <div class="flag">
           <img :src="`/src/assets/dialog/qizi_${item}.png`" alt="">
         </div>

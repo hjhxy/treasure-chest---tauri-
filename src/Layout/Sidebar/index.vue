@@ -77,7 +77,7 @@ const { hideSideBar } = useControlSideBar();
     <div class="lists">
       <RouterLink
         v-for="(item, index) in list"
-        :key="item.id"
+        :key="index"
         :to="item.url"
         :class="item.class"
         @click="chooseList(item.id)"
@@ -122,7 +122,8 @@ const { hideSideBar } = useControlSideBar();
   background-color: rgb(249, 240, 232);
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 5px rgb(237, 225, 214);
+  box-shadow: 1px 1px 3px rgb(237, 225, 214);
+  z-index: 10;
 
   .head {
     display: flex;

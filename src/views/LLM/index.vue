@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, ref, Ref } from "vue";
+import { onActivated, onMounted, ref, Ref } from "vue";
 import OpenAI from "openai";
 import { nanoid } from "nanoid";
 
 interface IChatData {
-  id: number;
+  id: number|string;
   content: string;
   sender: string;
   time: string;
@@ -17,6 +17,9 @@ const scrollToBottom = () => {
 };
 onMounted(() => {
   scrollToBottom();
+  onActivated(() => {
+    scrollToBottom();
+  });
 });
 
 // deepseek key: sk-c790d02c0e4f4e53bd07df6499bd6fce
@@ -26,7 +29,7 @@ const openai = async (msg: string) => {
     apiKey: "sk-c790d02c0e4f4e53bd07df6499bd6fce",
   });
   const completion = await openai.chat.completions.create({
-    messages: [{ role: "system", content: "You are a helpful assistant." }],
+    messages: [{ role: "system", content: msg||"You are a helpful assistant." }],
     model: "deepseek-chat",
   });
   return completion.choices[0].message.content;
@@ -66,7 +69,8 @@ const resolve_chat = () => {
     },
     {
       id: 5,
-      content: "That sounds perfect! What's the best way to measure the coffee?",
+      content:
+        "That sounds perfect! What's the best way to measure the coffee?",
       sender: "Bot",
       time: new Date().toLocaleString(),
     },
@@ -79,6 +83,18 @@ const resolve_chat = () => {
   ]);
   const inputMessage = ref("");
   const isentering = ref(false);
+  const $input = ref<HTMLInputElement | null>(null);
+  const handleEnter = (event: KeyboardEvent) => {
+    if (event.shiftKey) {
+      console.log("换行");
+      if (!inputMessage.value.trim().length) return;
+      inputMessage.value = inputMessage.value + "\n";
+      return;
+    } else {
+      sendMessage();
+      event.preventDefault();
+    }
+  };
   const sendMessage = async () => {
     try {
       if (isentering.value) return;
@@ -87,7 +103,7 @@ const resolve_chat = () => {
         return;
       }
       messages.value.push({
-        id: messages.value.length,
+        id: nanoid(),
         content: inputMessage.value,
         sender: "User",
         time: new Date().toLocaleString(),
@@ -95,98 +111,173 @@ const resolve_chat = () => {
       scrollToBottom();
       let res = await openai(inputMessage.value);
       messages.value.push({
-        id: messages.value.length,
+        id: nanoid(),
         content: res || "",
         sender: "Bot",
         time: new Date().toLocaleString(),
       });
       scrollToBottom();
       console.log(res);
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.error("Error:", error.message);
     } finally {
       isentering.value = false;
       inputMessage.value = "";
+      console.log(111, $input.value);
+      $input.value?.focus();
     }
   };
-  return { messages, inputMessage, isentering, sendMessage };
+  return {
+    messages,
+    inputMessage,
+    isentering,
+    sendMessage,
+    handleEnter,
+    $input,
+  };
 };
 
-const { messages, inputMessage, isentering, sendMessage } = resolve_chat();
+const resolveInfo = () => {
+  const dialogVisible = ref(false);
+  const aboutTips = () => {
+    dialogVisible.value = true;
+  };
+  return {
+    dialogVisible,
+    aboutTips,
+  };
+};
+
+const { messages, inputMessage, isentering, handleEnter, $input } =
+  resolve_chat();
+const { dialogVisible, aboutTips } = resolveInfo();
 </script>
 
 <template>
   <!-- 初始化聊天模版 -->
   <div id="chat-container">
-    <div id="chat-window">
+    <div id="chat-window" shadow="never">
+      <div id="chat-info">
+        <div class="info-title">
+          Chat Bot&nbsp;&nbsp;<el-link type="primary" @click="aboutTips"
+            >Tips</el-link
+          >
+        </div>
+      </div>
       <div id="message-list" ref="$messageList">
         <div v-for="message in messages" :key="message.id" class="message">
-          <div v-if="message.sender == 'Bot'" class="bot-message">
+          <el-card
+            shadow="hover"
+            v-if="message.sender == 'Bot'"
+            class="bot-message"
+          >
             <div>{{ message.content }}</div>
-          </div>
-          <div v-else class="sender-message">{{ message.content }}</div>
+          </el-card>
+          <el-card shadow="hover" v-else class="sender-message">{{
+            message.content
+          }}</el-card>
         </div>
       </div>
       <div id="message-input">
         <el-input
+          ref="$input"
           class="input-message"
           type="textarea"
           v-model.trim="inputMessage"
-          @keyup.enter="sendMessage"
-          placeholder="Type a message and press Enter"
-          :autosize="{ minRows: 3, maxRows: 5 }"
+          @keyup.enter="handleEnter"
+          placeholder="You can try asking me a question"
+          :autosize="{ minRows: 4, maxRows: 4 }"
           resize="none"
           :disabled="isentering"
         />
-        <el-button
+        <!-- <el-button
           :loading="isentering"
           class="input-btn"
           type="primary"
           @click="sendMessage"
           >Send</el-button
-        >
+        > -->
       </div>
     </div>
   </div>
+  <el-dialog v-model="dialogVisible" title="Tips" width="50%" draggable>
+    <div class="content">
+      <h4>1. 关于LLM模块</h4>
+      <p>
+        接入了DeepSeek和豆包的LLM，使用上也与其一致，目前只支持文字对话。
+      </p>
+      <br />
+      <h4>2. 怎么使用</h4>
+      <p>
+        正常对话即可，LLM可以结合上下文作答，可以选择是否缓存聊天记录，具体看设置模块(默认缓存，聊天结果会被保存至本地目录...)。
+      </p>
+      <p>
+        enter: 发送。
+        enter+shift：换行。
+      </p>
+    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false">
+          好的😋
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
+/deep/.el-card__body {
+  padding: 10px 15px;
+}
+
 #chat-container {
   display: flex;
   flex-direction: column;
+  padding-left: 2px;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 50px);
   max-height: 100vh;
-  padding: 50px 10px 0;
 
   #chat-window {
+    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
+
+    #chat-info {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(to bottom, white, rgb(236, 236, 236));      ;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     #message-list {
       width: 100%;
       display: flex;
       flex-direction: column;
-      height: 500px;
-      padding: 20px;
+      flex: 1;
+      padding: 10px 20px;
       overflow-y: auto;
       scroll-behavior: smooth; /* 设置平滑滚动 */
 
       .bot-message,
       .sender-message {
-        margin-top: 30px;
+        margin-top: 20px;
         width: 80%;
-        border-radius: 10px;
-        padding: 10px;
+        border-radius: 20px;
       }
 
       .bot-message {
-        background-color: #ececec;
+        background-color: rgba(241, 199, 236, 0.3);
         align-self: flex-start;
       }
 
       .sender-message {
-        background-color: antiquewhite;
+        background-color: rgba(71, 209, 66, 0.2);
         align-self: flex-end;
         float: right;
       }
@@ -196,11 +287,13 @@ const { messages, inputMessage, isentering, sendMessage } = resolve_chat();
       height: 100px;
       padding-top: 10px;
       display: flex;
+      justify-content: space-between;
+      padding: 0px 15px;
+      box-sizing: border-box;
 
       .input-message {
         flex: 1;
         border: none;
-        padding-left: 10px;
       }
 
       .input-btn {

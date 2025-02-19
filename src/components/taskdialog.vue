@@ -68,7 +68,7 @@ const useDialog = () => {
 
   watch(
     () => props.task,
-    (newVal, oldVal) => {
+    (newVal, _) => {
       if (newVal) {
         editTask.value = {
           ...newVal,

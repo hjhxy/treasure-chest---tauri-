@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { invoke } from "@tauri-apps/api/core";
 import { ElNotification } from "element-plus";
-import { ref } from "vue";
+import { onActivated, onMounted, ref } from "vue";
 
 interface IResponse {
   code: number | string;
@@ -11,10 +11,10 @@ interface IResponse {
 
 const search_grade = () => {
   const cookie = ref(
-    "EMAP_LANG=zh; THEME=cherry; _WEU=Y3GgGof5bQF43j0113gRVhCuXCoG5i8DcPF5sKJsAGsdyerFnYH9EFVFXtx_WUWhJugjJ9gz1EtxrWsI0oKUfszlVMQnNAsIckcbpI2yY4C2b2O3eHzK*GydTAh*2OhaK8yn7Z*rIeAOpZTtxegfNydwA_c8pNIjc7DIM9d7MAfxsZJZDVCtk0FWJXRQuK_*XYa8qUXJllIMOPRYTU1seo..; _webvpn_key=eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiMjQxMDEwNDAwNCIsImdyb3VwcyI6WzE3XSwiaWF0IjoxNzIxNjE3Mzc1LCJleHAiOjE3MjE3MDM3NzV9.I0xmqkAu8NLv0tvqcwPVihZqQerPlpB-RPOW2m8IfYQ; webvpn_username=2410104004%7C1721617375%7Cda13a91bd649895b0840da6ad5ac2bf82e9900f8; webvpn_username_NS_Sig=oenCV62fmzohvQOy; XK_TOKEN=360f391f-f1a9-4cbe-9ca4-e26e0a3eed4c; insert_cookie=38189586; MOD_AUTH_CAS=MOD_AUTH_ST-139167-D3---gHUe2fiY3c4Fl1uRX3vecsciapserver1; asessionid=c9fadbc7-44db-4624-a3ee-f81a1a9d820b; amp.locale=undefined; route=d4c9b24c6fb7a904a59a81621baf32ed; JSESSIONID=egcO2hjg9VQC_Y1TaAD0du8fs1jYA0dmGRWLMmpauu_LqDs_wowC!1915644957"
+    "EMAP_LANG=zh; THEME=cherry; _WEU=PyMvEPvtCnTue_F94Lj8nDPr6B1EUhMywXSyg64W_lfJ8gncwt1bHn82_Peo8uap3kowO*95mXy4ypdDPkmhbUHmRr6SRmABi0olHWlruKNaRHKtYQzxLDMTw5*vTWx4Nif1cv7h_o5iLsJagnpGcipggIgUMn2vsILCSsrveHe2VHAV8f7w8xsDTNLn0EgNagKtHK7H4OEFlmYPLElGtj..; insert_cookie=38189586; MOD_AUTH_CAS=MOD_AUTH_ST-192426-fGgYCyRaa3wHrPUwvjw-Bngf7eQciapserver1; asessionid=4d169c2c-4615-4517-aa14-73ce6f60bb3f; amp.locale=undefined; route=d4c9b24c6fb7a904a59a81621baf32ed; JSESSIONID=lm0eNsK4Gl3tzPyEu6dLxjSNmYVVIqBukdtXHYGI9W6UFKPY_o7c!-786826884"
   );
   const issearching = ref(false);
-  const search_data = ref(null);
+  const search_data = ref([]);
   const dialogVisible = ref(false);
   const reqmsg = ref("");
   const aboutGrade = () => {
@@ -25,7 +25,7 @@ const search_grade = () => {
     console.log("调试中...");
     try {
       issearching.value = true;
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve, _) => {
         setTimeout(() => {
           resolve(1);
         }, 200);
@@ -36,18 +36,22 @@ const search_grade = () => {
       });
       if (response.code == 400) {
         reqmsg.value = response.msg!;
+        ElNotification({
+          title: "查询成功",
+          message: reqmsg.value,
+          type: "error",
+        });
         return;
       } else {
-        search_data.value = response.datas.xscjcx.rows;
-        reqmsg.value = `请求成功，共${(search_data.value as any).length}门成绩，已出${
-          (search_data.value as any).length
-        }门`;
-        // ElNotification({
-        //   title: 'Success',
-        //   message: 'This is a success message',
-        //   type: 'success',
-        // });
-        console.log("查询成功: ", response.datas);
+        const response_data = response.datas.xscjcx;
+        reqmsg.value = `查询成功，当前共 ${response_data.totalSize} 门课程，已出 ${response_data.rows.length} 门`;
+        ElNotification({
+          title: "查询成功",
+          message: reqmsg.value,
+          type: "success",
+        });
+        search_data.value = response_data.rows;
+        console.log("查询成功: ", search_data.value);
       }
     } catch (error: any) {
       reqmsg.value = error.message;
@@ -67,54 +71,89 @@ const search_grade = () => {
   };
 };
 
+const result_card_style = () => {
+  const $search_card = ref<HTMLElement | null>(null);
+  const $resut_card = ref<HTMLElement | null>(null);
+  const table_height = ref<number | string>(0);
+  const resize = () => {
+    if ($search_card.value && $resut_card.value) {
+      table_height.value = `${
+        window.innerHeight - $search_card.value.offsetHeight - 80
+      }px`;
+      $resut_card.value!.style.height = table_height.value;
+    }
+  };
+  onMounted(() => {
+    resize();
+    window.onresize = () => {
+      resize();
+    };
+
+    onActivated(() => {
+      resize();
+    });
+  });
+  return {
+    $resut_card,
+    $search_card,
+    table_height,
+  };
+};
+
 const {
   cookie,
   issearching,
   search_data,
   dialogVisible,
-  reqmsg,
   aboutGrade,
   searchGrade,
 } = search_grade();
+
+const { $search_card, $resut_card } = result_card_style();
 </script>
 
 <template>
   <div class="root">
-    <el-card class="search" style="background: rgba(73, 171, 238, 0.3);">
-      <template #header>
-        <div class="card-header">
-          <span>深圳大学成绩查询</span>
-          <el-link type="primary" @click="aboutGrade">关于</el-link>
+    <div class="search_container" ref="$search_card">
+      <el-card class="search" style="background: rgba(73, 171, 238, 0.3)">
+        <template #header>
+          <div class="card-header">
+            <span>深圳大学成绩查询</span>
+            <el-link type="primary" @click="aboutGrade">Tips</el-link>
+          </div>
+        </template>
+        <div class="card-container">
+          <div class="msg-input">
+            <label for="cookie">cookie：</label>
+            <el-input
+              id="cookie"
+              v-model="cookie"
+              style="width: 340px"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              type="textarea"
+              resize="none"
+              placeholder="输入cookie，教程可登录github:xxx查看"
+            />
+          </div>
+          <el-button
+            :loading="issearching"
+            class="search-btn"
+            type="success"
+            round
+            @click="searchGrade"
+            >查询</el-button
+          >
         </div>
-      </template>
-      <div class="card-container">
-        <div class="msg-input">
-          <label for="cookie">cookie：</label>
-          <el-input
-            id="cookie"
-            v-model="cookie"
-            style="width: 340px"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-            type="textarea"
-            resize="none"
-            placeholder="输入cookie，教程可登录github:xxx查看"
-          />
-        </div>
-        <el-button
-          :loading="issearching"
-          class="search-btn"
-          type="success"
-          round
-          @click="searchGrade"
-          >查询</el-button
-        >
-      </div>
-    </el-card>
+      </el-card>
+    </div>
 
     <el-dialog v-model="dialogVisible" title="Tips" width="50%" draggable>
       <div class="content">
         <h4>1. 这个模块的作用是什么？</h4>
-        <p>学校有成绩查询为什么还需要这个？因为官网的只有在指定日期后才展示，在这之前官网不会开放查看权限，而实际老师的评分时间在这之前。</p><br/>
+        <p>
+          学校有成绩查询为什么还需要这个？因为官网的只有在指定日期后才展示，在这之前官网不会开放查看权限，而实际老师的评分时间在这之前。
+        </p>
+        <br />
         <h4>2. 成绩查询如何操作？</h4>
         <p></p>
         <p>
@@ -126,26 +165,29 @@ const {
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="dialogVisible = false"> 好的😋 </el-button>
+          <el-button type="primary" @click="dialogVisible = false">
+            好的😋
+          </el-button>
         </div>
       </template>
     </el-dialog>
 
-    <el-card class="result">
-      <el-table
-        :loading="issearching"
-        :data="search_data"
-        style="width: 100%;"
-        height="300"
-      >
-        <el-table-column fixed prop="KCMC" label="课程名称" width="120" />
-        <el-table-column prop="CJXSZ" label="分数" width="120" />
-        <el-table-column prop="JDZ" label="绩点" width="120" />
-        <el-table-column prop="XF" label="学分" width="100" />
-        <el-table-column prop="CZRXM" label="任课老师" width="100" />
-        <el-table-column prop="CZSJ" label="评分日期" width="150" />
-      </el-table>
-    </el-card>
+    <div ref="$resut_card" class="result_container">
+      <el-card class="result">
+        <el-table
+          :loading="issearching"
+          :data="search_data"
+          style="width: 100%"
+        >
+          <el-table-column fixed prop="KCMC" label="课程名称" />
+          <el-table-column prop="CJXSZ" label="分数" />
+          <el-table-column prop="JDZ" label="绩点" />
+          <el-table-column prop="XF" label="学分" />
+          <el-table-column prop="CZRXM" label="任课老师" />
+          <el-table-column prop="CZSJ" label="评分日期" />
+        </el-table>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -174,6 +216,9 @@ const {
   }
 
   .result {
+    height: fit-content;
+    max-height: 100%;
+    overflow-y: auto;
     margin-top: 10px;
   }
 }

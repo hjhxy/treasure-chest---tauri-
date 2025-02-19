@@ -11,7 +11,7 @@ const useWindowsize = () => {
   });
   let timer = ref<number|null>(null);
   let resizing = ref(false);
-  window.addEventListener("resize", (e) => {
+  window.addEventListener("resize", (_) => {
     if (resizing.value) return;
     resizing.value = true;
     timer.value = setTimeout(() => {
@@ -50,11 +50,11 @@ const { sideBarRef, showSideBar, hideSideBar } = useSideBar();
 </script>
 
 <template>
-  <div class="container">
-    <div class="sidebar" ref="sideBarRef" :style="{ height: windowsize.height + 'px' }">
+  <div class="container" :style="{ height: windowsize.height + 'px' }">
+    <div class="sidebar" ref="sideBarRef">
       <SideBar @showSideBar="showSideBar" @hideSideBar="hideSideBar" />
     </div>
-    <div class="main" :style="{ height: windowsize.height + 'px'}">
+    <div class="main">
       <div class="sidebarcontainer">
         <div class="showsidebar" @click="showSideBar">
           <img src="../assets/icons/showsidebarhoriz.png" alt="" />
@@ -77,7 +77,6 @@ const { sideBarRef, showSideBar, hideSideBar } = useSideBar();
   }
 }
 .hide {
-  // transform: translateX(-100%);
   display: none !important;
 }
 .show {
@@ -96,13 +95,14 @@ const { sideBarRef, showSideBar, hideSideBar } = useSideBar();
 .sidebar {
   transition: all .5s;
   width: 25%;
+  height: 100%;
   min-width: 200px;
   max-width: 300px;
 }
 
 .main {
-  transition: all 2.5s;
   flex: 75%;
+  height: 100%;
   min-width: 400px;
   display: flex;
   position: relative;
