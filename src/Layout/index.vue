@@ -57,7 +57,7 @@ const { sideBarRef, showSideBar, hideSideBar } = useSideBar();
     <div class="main">
       <div class="sidebarcontainer">
         <div class="showsidebar" @click="showSideBar">
-          <img src="../assets/icons/showsidebarhoriz.png" alt="" />
+          <img src="/assets/icons/showsidebarhoriz.png" alt="" />
         </div>
       </div>
       <Main />

@@ -12,24 +12,24 @@ const useList = () => {
       url: "/todo",
       name: "TodoList",
       class: ["list-item", "active"],
-      icons: ["/src/assets/icons/todo.png", "/src/assets/icons/todo_choose.png"],
-      nowicon: "/src/assets/icons/todo_choose.png",
+      icons: ["/assets/icons/todo.png", "/assets/icons/todo_choose.png"],
+      nowicon: "/assets/icons/todo_choose.png",
     },
     {
       id: "searchgrade",
       url: "/searchgrade",
       name: "成绩查询",
       class: ["list-item"],
-      icons: ["/src/assets/icons/searchgrade.png", "/src/assets/icons/searchgrade_choose.png"],
-      nowicon: "/src/assets/icons/searchgrade.png",
+      icons: ["/assets/icons/searchgrade.png", "/assets/icons/searchgrade_choose.png"],
+      nowicon: "/assets/icons/searchgrade.png",
     },
     {
       id: "llm",
       url: "/llm",
       name: "LLM",
       class: ["list-item"],
-      icons: ["/src/assets/icons/chatgpt.png", "/src/assets/icons/chatgpt_choose.png"],
-      nowicon: "/src/assets/icons/chatgpt.png",
+      icons: ["/assets/icons/chatgpt.png", "/assets/icons/chatgpt_choose.png"],
+      nowicon: "/assets/icons/chatgpt.png",
     },
   ]);
   const currentItemId = ref<string>(list.value[0].id);
@@ -71,7 +71,7 @@ const { hideSideBar } = useControlSideBar();
     <div class="head">
       <p class="weather">18-20度，多云转晴☁️</p>
       <div class="controlside">
-        <img @click="hideSideBar" src="../../assets/icons/hidesidebarhoriz.png" alt="" />
+        <img @click="hideSideBar" src="/assets/icons/hidesidebarhoriz.png" alt="" />
       </div>
     </div>
     <div class="lists">

@@ -101,7 +101,7 @@ const {
             <span class="taskdesc">{{ item.describe }}</span>
           </div>
           <div class="rightflag">
-            <img :src="`/src/assets/dialog/qizi_${item.priority}.png`" alt="">
+            <img :src="`/assets/dialog/qizi_${item.priority}.png`" alt="">
           </div>
         </div>
       </div>

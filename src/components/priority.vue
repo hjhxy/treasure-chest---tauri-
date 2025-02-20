@@ -21,11 +21,11 @@ const choose = (item: priority) => {
   <div class="root">
     <div class="list" v-for="(item, index) in list" @click="choose(item)" :key="index">
         <div class="flag">
-          <img :src="`/src/assets/dialog/qizi_${item}.png`" alt="">
+          <img :src="`/assets/dialog/qizi_${item}.png`" alt="">
         </div>
         <span class="content">优先级{{item}}</span>
         <div class="icon">
-          <img :class="[props.chooseIndex==item?'show':'hide']" src="/src/assets/dialog/gou.png" alt="">
+          <img :class="[props.chooseIndex==item?'show':'hide']" src="/assets/dialog/gou.png" alt="">
         </div>
     </div>
   </div>
