@@ -22,11 +22,11 @@ onMounted(() => {
   });
 });
 
-// deepseek key: sk-c790d02c0e4f4e53bd07df6499bd6fce
+// deepseek key
 const openai = async (msg: string) => {
   const openai = new OpenAI({
     baseURL: "https://api.deepseek.com",
-    apiKey: "sk-c790d02c0e4f4e53bd07df6499bd6fce",
+    apiKey: "",
   });
   const completion = await openai.chat.completions.create({
     messages: [{ role: "system", content: msg||"You are a helpful assistant." }],
