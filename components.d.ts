@@ -25,7 +25,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Taskdialog: typeof import('./src/components/taskdialog.vue')['default']
     Time: typeof import('./src/components/time.vue')['default']
-    Today: typeof import('./src/components/Today/index.vue')['default']
   }
   export interface ComponentCustomProperties {
     vPopover: typeof import('element-plus/es')['ElPopoverDirective']

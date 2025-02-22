@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { ITask, ITaskList } from "../../store/todoList/index";
 import TaskDialog from "../../components/taskdialog.vue";
@@ -65,6 +65,28 @@ const useTask = () => {
     cancelEdit,
   };
 };
+
+const useListStyle = ()=>{
+  const $task_list = ref<HTMLElement|null>(null);
+  const adjustHeight = () => {
+    const height = window.innerHeight;
+    if ($task_list.value) {
+      console.log(111);
+      $task_list.value.style.height = `${height - 310}px`;
+    }
+  }
+  const resize = ()=>{
+    window.onresize = adjustHeight;
+  }
+  onMounted(()=>{
+    adjustHeight();
+    resize();
+  })
+  return {
+    $task_list
+  }
+}
+
 const { completedTasks, pendingTasks } = useHeader();
 const { taskList, changeComplete, getListClass } = useList();
 const {
@@ -74,6 +96,7 @@ const {
   ensureEdit,
   cancelEdit,
 } = useTask();
+const { $task_list } = useListStyle();
 </script>
 
 <template>
@@ -84,10 +107,9 @@ const {
        今日共{{ taskList.length }}个任务， {{ pendingTasks.length }}个任务待完成，{{ completedTasks.length }}个任务已完成
       </p>
     </div>
-    <div class="task-list">
+    <div class="task-list" ref="$task_list">
       <!-- 任务列表 -->
       <div class="list" :style="getListClass()" v-for="(item, index) in taskList" :key="index">
-        <!-- <el-divider /> -->
         <div class="content">
           <div class="left">
             <input
@@ -158,8 +180,7 @@ is-left {
   }
 
   .task-list {
-    height: 348px;
-    max-height: 348px;
+    min-height: 348px;
     overflow: auto;
     padding: 0 14px 10px 0;
     .list {

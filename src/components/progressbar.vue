@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, onMounted, computed} from "vue";
+import { defineProps, onMounted, computed, ref} from "vue";
 
 const props = defineProps<{
   current: number;
@@ -7,8 +7,14 @@ const props = defineProps<{
 }>();
 
 const useBear = ()=>{
+  const win_width = ref(0);
+  onMounted(()=>{
+    window.onresize = ()=>{
+       win_width.value = window.innerWidth;
+    }
+  })
   const left = computed(()=>{
-    return (props.current / props.all) * 635;
+    return (props.current / props.all) * (win_width.value-240);
   });
   return {
     left,

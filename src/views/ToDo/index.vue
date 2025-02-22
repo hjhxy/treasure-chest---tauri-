@@ -104,7 +104,11 @@ const { currentProgress, allProgress, overProportion } = useProgressBar();
       <el-divider content-position="left" border-style="dashed">
         <el-icon :size="16" color="green"><Tickets /></el-icon> Task List
       </el-divider>
-      <RouterView />
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
 
     <div class="footer">
@@ -143,10 +147,9 @@ const { currentProgress, allProgress, overProportion } = useProgressBar();
 .root {
   display: flex;
   flex-direction: column;
-  // justify-content: flex-start;
-  // justify-content: space-between;
   width: 100%;
   height: 100%;
+  // justify-content: space-between;
 
   .header {
     display: flex;
@@ -163,10 +166,12 @@ const { currentProgress, allProgress, overProportion } = useProgressBar();
   }
 
   .body {
+    // border: 1px solid red;
   }
 
   .footer {
-    // background-color: red;
+    height: 110px;
+    // background-color: rgb(147, 218, 252);
     display: flex;
     justify-content: space-evenly;
     align-items: center;
