@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import { nanoid } from "nanoid";
 
 interface IChatData {
-  id: number|string;
+  id: number | string;
   content: string;
   sender: string;
   time: string;
@@ -29,7 +29,7 @@ const openai = async (msg: string) => {
     apiKey: "",
   });
   const completion = await openai.chat.completions.create({
-    messages: [{ role: "system", content: msg||"You are a helpful assistant." }],
+    messages: [{ role: "system", content: msg || "You are a helpful assistant." }],
     model: "deepseek-chat",
   });
   return completion.choices[0].message.content;
@@ -69,8 +69,7 @@ const resolve_chat = () => {
     },
     {
       id: 5,
-      content:
-        "That sounds perfect! What's the best way to measure the coffee?",
+      content: "That sounds perfect! What's the best way to measure the coffee?",
       sender: "Bot",
       time: new Date().toLocaleString(),
     },
@@ -148,8 +147,7 @@ const resolveInfo = () => {
   };
 };
 
-const { messages, inputMessage, isentering, handleEnter, $input } =
-  resolve_chat();
+const { messages, inputMessage, isentering, handleEnter, $input } = resolve_chat();
 const { dialogVisible, aboutTips } = resolveInfo();
 </script>
 
@@ -159,18 +157,13 @@ const { dialogVisible, aboutTips } = resolveInfo();
     <div id="chat-window" shadow="never">
       <div id="chat-info">
         <div class="info-title">
-          Chat Bot&nbsp;&nbsp;<el-link type="primary" @click="aboutTips"
-            >Tips</el-link
-          >
+          <div class="title">Chat Bot</div>
+          &nbsp;&nbsp;<el-link type="primary" @click="aboutTips">Tips</el-link>
         </div>
       </div>
       <div id="message-list" ref="$messageList">
         <div v-for="message in messages" :key="message.id" class="message">
-          <el-card
-            shadow="hover"
-            v-if="message.sender == 'Bot'"
-            class="bot-message"
-          >
+          <el-card shadow="hover" v-if="message.sender == 'Bot'" class="bot-message">
             <div>{{ message.content }}</div>
           </el-card>
           <el-card shadow="hover" v-else class="sender-message">{{
@@ -203,24 +196,17 @@ const { dialogVisible, aboutTips } = resolveInfo();
   <el-dialog v-model="dialogVisible" title="Tips" width="50%" draggable>
     <div class="content">
       <h4>1. 关于LLM模块</h4>
-      <p>
-        接入了DeepSeek和豆包的LLM，使用上也与其一致，目前只支持文字对话。
-      </p>
+      <p>接入了DeepSeek和豆包的LLM，使用上也与其一致，目前只支持文字对话。</p>
       <br />
       <h4>2. 怎么使用</h4>
       <p>
         正常对话即可，LLM可以结合上下文作答，可以选择是否缓存聊天记录，具体看设置模块(默认缓存，聊天结果会被保存至本地目录...)。
       </p>
-      <p>
-        enter: 发送。
-        enter+shift：换行。
-      </p>
+      <p>enter: 发送。 enter+shift：换行。</p>
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible = false">
-          好的😋
-        </el-button>
+        <el-button type="primary" @click="dialogVisible = false"> 好的😋 </el-button>
       </div>
     </template>
   </el-dialog>
@@ -248,11 +234,16 @@ const { dialogVisible, aboutTips } = resolveInfo();
     #chat-info {
       width: 100%;
       height: 50px;
-      background: linear-gradient(to bottom, white, rgb(236, 236, 236));      ;
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(to bottom, #f6f6f6, #dcdcdc);
+      // box-shadow: 0 5px 10px rgba(0, 0, 0, 1);
       display: flex;
       align-items: center;
       justify-content: center;
+      
+      .info-title {
+        display: flex;
+        flex-direction: row;
+      }
     }
 
     #message-list {

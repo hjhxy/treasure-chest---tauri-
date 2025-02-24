@@ -16,11 +16,11 @@ const routers = [
         children: [
           {
             path: "today",
-            component: () => import("../views/Today/index.vue"),
+            component: () => import("../views/ToDo/components/today.vue"),
           },
           {
             path: "preview",
-            component: () => import("../views/Preview/index.vue"),
+            component: () => import("../views/ToDo/components/preview.vue"),
           },
         ],
       },

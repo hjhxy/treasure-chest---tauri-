@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import { ITask, ITaskList } from "../../store/todoList/index";
-import TaskDialog from "../../components/taskdialog.vue";
-import { getRandomSoftColor } from '../../utils/color';
+import { ITask, ITaskList } from "@/store/todoList/index.ts";
+import TaskDialog from "@/components/taskdialog.vue";
+import { getRandomSoftColor } from '@/utils/color';
 
 const store = useStore();
 
